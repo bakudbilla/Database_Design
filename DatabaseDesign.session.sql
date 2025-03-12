@@ -1,0 +1,116 @@
+-- SELECT * FROM database_design.`titanic-dataset`;
+-- creating tables for the dataset
+-- CREATE TABLE Passengers (
+--     PassengerId INT PRIMARY KEY,
+--     Name VARCHAR(255),
+--     Sex ENUM('male', 'female'),
+--     Age FLOAT,
+--     SibSp INT,
+--     Parch INT
+-- );
+-- CREATE TABLE Tickets (
+-- 	TicketId INT AUTO_INCREMENT PRIMARY KEY,
+--     Ticket VARCHAR(50) UNIQUE,
+--     Pclass INT,
+--     Fare DECIMAL(10,4),
+--     Cabin VARCHAR(50),
+--     Embarked CHAR(1)
+-- );
+-- CREATE TABLE Survivors (
+--     SurvivorId INT AUTO_INCREMENT PRIMARY KEY,
+--     PassengerId INT UNIQUE,
+--     Survived BOOLEAN,
+--     FOREIGN KEY (PassengerId) REFERENCES Passengers(PassengerId)
+-- );
+-- -- Populating the tables from the source dataset
+-- INSERT INTO Passengers (PassengerId, Name, Sex, Age, SibSp, Parch)
+-- SELECT PassengerId, Name, Sex, Age, SibSp, Parch FROM database_design.`titanic-dataset`; 
+-- INSERT INTO Tickets (Ticket, Pclass, Fare, Cabin, Embarked)
+-- SELECT DISTINCT Ticket, Pclass, Fare, Cabin, Embarked FROM database_design.`titanic-dataset`;
+-- INSERT INTO Survivors (PassengerId, Survived)
+-- SELECT PassengerId, Survived FROM database_design.`titanic-dataset`;
+-- Creating relationship btn Passengers table and Tickets table, I forgot
+-- alter table Passengers
+-- add column TicketId int;
+-- alter table Passengers
+-- add column Ticket varchar(50);
+-- UPDATE Passengers p
+-- JOIN database_design.`titanic-dataset` t ON p.PassengerId = t.PassengerId
+-- SET p.Ticket = t.Ticket;
+-- UPDATE Passengers p
+-- JOIN Tickets t ON p.Ticket = t.Ticket
+-- SET p.TicketId = t.TicketId;
+-- ALTER TABLE Passengers 
+-- ADD CONSTRAINT fk_ticket FOREIGN KEY (TicketId) REFERENCES Tickets(TicketId);
+-- alter table Passengers
+-- drop column Ticket;
+-- creating a stored procedure
+-- DELIMITER $$
+-- CREATE PROCEDURE AddTicket(
+--     IN p_Ticket VARCHAR(50), 
+--     IN p_Pclass INT,
+--     IN p_Fare DECIMAL(10,2), 
+--     IN p_Cabin VARCHAR(20), 
+--     IN p_Embarked CHAR(1),
+--     OUT p_TicketId INT
+-- )
+-- BEGIN
+--     DECLARE existing_TicketId INT;
+--     SELECT TicketId INTO existing_TicketId 
+--     FROM Tickets 
+--     WHERE Ticket = p_Ticket 
+--     LIMIT 1;
+--     IF existing_TicketId IS NOT NULL THEN
+--         SET p_TicketId = existing_TicketId;
+--     ELSE
+--         INSERT INTO Tickets (Ticket, Pclass, Fare, Cabin, Embarked) 
+--         VALUES (p_Ticket, p_Pclass, p_Fare, p_Cabin, p_Embarked);
+--         
+--         SET p_TicketId = LAST_INSERT_ID();
+--     END IF;
+-- END$$
+-- DELIMITER ;
+-- select * from Tickets; 
+-- CALL AddTicket('PC 1721', 3, 72.51, 'C25', 'C', @NewTicketId);
+-- SELECT @NewTicketId;
+-- SELECT * FROM Tickets WHERE Ticket = 'PC 1721';
+-- Creating a trigger for Ticket validation
+-- Creating Ticket logs table first
+-- CREATE TABLE TicketLog (
+--     LogId INT AUTO_INCREMENT PRIMARY KEY,
+--     Ticket VARCHAR(50),
+-- 	Pclass INT,
+--     Fare DECIMAL(10,2),
+--     Cabin VARCHAR(20),
+--     Embarked CHAR(1),
+--     InsertedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
+-- Creating the trigger
+-- DELIMITER $$
+-- CREATE TRIGGER BeforeTicketInsert
+-- BEFORE INSERT ON Tickets
+-- FOR EACH ROW
+-- BEGIN
+--     -- Ensuring the ticket number is unique
+--     IF EXISTS (SELECT 1 FROM Tickets WHERE Ticket = NEW.Ticket) THEN
+--         SIGNAL SQLSTATE '45000'
+--         SET MESSAGE_TEXT = 'Error: TicketNumber already exists!';
+--     END IF;
+--     
+--     -- Preventing negative fare values
+--     IF NEW.Fare < 0 THEN
+--         SET NEW.Fare = 0;
+--     END IF;
+--     -- Logging the ticket insertion
+--     INSERT INTO TicketLog (Ticket, Pclass, Fare, Cabin, Embarked) 
+--     VALUES (NEW.Ticket, NEW.Pclass, NEW.Fare, NEW.Cabin, NEW.Embarked);
+-- END$$
+-- DELIMITER ;
+-- INSERT INTO Tickets (Ticket, Pclass, Fare, Cabin, Embarked) 
+-- VALUES ('ABC 3123', 1, 50.10, 'B25', 'S');
+-- INSERT INTO Tickets (Ticket, Pclass, Fare, Cabin, Embarked) 
+-- VALUES ('AB 21231', 2, -10.0, 'S12', 'C')
+-- exporting Tables as CSV
+-- select * from Passengers;
+-- select * from Tickets;
+-- select * from Survivors
