@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
-from Database_Design.api.models import Passenger, Ticket, Survivor
+from api.models import Passenger, Ticket, Survivor
 import schemas
 
 from sqlalchemy.orm import Session
-from Database_Design.api.models import Passenger
+from api.models import Passenger
 import schemas
 
 #CRUD for Passengers
