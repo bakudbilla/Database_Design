@@ -1,6 +1,10 @@
 from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
+<<<<<<< HEAD
 from api.database import Base
+=======
+from .database import Base  
+>>>>>>> 90d4114aa4d9e74f6928c27e69d8e3bd1bff27b5
 
 class Passenger(Base):
     __tablename__ = "passengers"
