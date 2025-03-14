@@ -15,7 +15,7 @@ try:
     client = MongoClient(MONGO_URI)
 
     # Test the connection
-    db = client.get_database()
+    db = client['TitanicDB']
     print("Connected to MongoDB!")
     print("Collections in the database:", db.list_collection_names())
 except Exception as e:
