@@ -1,8 +1,15 @@
 from pymongo import MongoClient
 
 # MongoDB connection string
-MONGO_URI = "mongodb+srv://kmugisha:kmugisha@cluster0.zusx7.mongodb.net/<TitanicDB>?retryWrites=true&w=majority&appName=Cluster0"
+from pymongo import MongoClient
+import os
+from dotenv import load_dotenv
 
+# Load environment variables
+load_dotenv()
+
+# MongoDB connection
+MONGO_URI = os.getenv("MONGO_URL")
 try:
     # Connect to MongoDB
     client = MongoClient(MONGO_URI)
