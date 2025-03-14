@@ -84,7 +84,7 @@ These operations interact with the PostgreSQL database via an ORM.
    ```
 4. **Run the Prediction Script:**
    ```bash
-   main.py.py
+   main.py
    ```
 
 ---
