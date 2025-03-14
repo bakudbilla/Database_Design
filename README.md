@@ -72,8 +72,8 @@ These operations interact with the PostgreSQL database via an ORM.
 
 1. **Clone the Repository:**
    ```bash
-   git clone <repository_url>
-   cd project_directory
+   git clone https://github.com/KennyKvn001/Database_Design.git
+   cd Database_Design
    ```
 2. **Set Up PostgreSQL & MongoDB:**
    - Import the SQL schema.
@@ -84,7 +84,7 @@ These operations interact with the PostgreSQL database via an ORM.
    ```
 4. **Run the Prediction Script:**
    ```bash
-   python predict.py
+   main.py.py
    ```
 
 ---
